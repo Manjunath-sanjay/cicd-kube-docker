@@ -7,9 +7,8 @@ pipeline {
     }
 */
     environment {
-        registry = "manjunath484/vproappdock"
-        registryCredential = "dockerhub"
-        ARTVERSION = "${env.BUILD_ID}"
+        registry = "kubeimran/vproappdock"
+        registryCredential = 'dockerhub'
     }
 
     stages{
@@ -72,10 +71,11 @@ pipeline {
                 }
             }
         }
+
         stage('Build App Image') {
           steps {
             script {
-              dockerImage = docker.build registry + ":BUILD_NUMBER"
+              dockerImage = docker.build registry + ":V$BUILD_NUMBER"
             }
           }
         }
@@ -91,7 +91,7 @@ pipeline {
           }
         }
 
-        stage('Removing Unused docker images') {
+        stage('Remove Unused docker image') {
           steps{
             sh "docker rmi $registry:V$BUILD_NUMBER"
           }
@@ -103,10 +103,6 @@ pipeline {
               sh "helm upgrade --install --force vprofile-stack helm/vprofilecharts --set appimage=${registry}:V${BUILD_NUMBER} --namespace prod"
             }
         }
-
-
-
-
     }
 
 
